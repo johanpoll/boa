@@ -117,6 +117,7 @@ fn main() {
                 println!("algorithm: nlogn");
                 partref_nlogn(data, r)
             };
+            println!("ids: {:?}", renumber(&ids));
             // let computation_time = start_time.elapsed().unwrap();
             println!("n_states: {}", ids.len());
             println!("n_states_min: {}", ids.iter().max().unwrap()+1);
