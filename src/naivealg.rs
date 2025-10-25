@@ -1,4 +1,5 @@
-
+use std::time::Duration;
+use cpu_time::ProcessTime;
 use crate::{hmap::HMap, coalg::{init_partition_ids_unsafe, repartition_all_unsafe64}, binrep::CReader};
 
 #[cfg(test)]
@@ -35,6 +36,7 @@ fn count_parts(sigs: &[u64]) -> usize {
 pub fn partref_naive(data: &[u8], r: &CReader) -> Vec<u32> {
   let mut ids = init_partition_ids_unsafe(data, r);
   let mut part_count = count_parts(&ids);
+  let start_cpu = ProcessTime::now();
   println!("Initial number of partitions/total states: {}/{}", part_count, ids.len());
   for iter in 0..99999999 {
       // let start_time = SystemTime::now();
@@ -42,6 +44,8 @@ pub fn partref_naive(data: &[u8], r: &CReader) -> Vec<u32> {
       let new_part_count = count_parts(&new_ids);
       println!("Iteration: {}, number of partitions/total states: {}/{}", iter, new_part_count, ids.len());
       if new_part_count == new_ids.len() || new_part_count == part_count {
+          let cpu: Duration = start_cpu.elapsed();
+          println!("Process CPU time: {}", cpu.as_secs_f32());
           println!("Number of iterations: {}", iter+1);
           return new_ids.iter().map(|id| *id as u32).collect();
       } else {

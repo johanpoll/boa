@@ -1,5 +1,5 @@
-use std::time::SystemTime;
-
+use std::time::{SystemTime, Duration};
+use cpu_time::ProcessTime;
 use datasize::data_size;
 
 #[cfg(test)]
@@ -22,6 +22,7 @@ fn partref_nlogn_raw(data: Vec<u8>, r: CReader) -> Vec<u32> {
   let mut partition = RefinablePartition::new(coa.num_states());
 
   let start_time_iters = SystemTime::now();
+  let start_cpu = ProcessTime::now();
   while let Some(block_id) = if false { partition.worklist.pop_front() } else { partition.worklist.pop_back() } {
 
       // let (start,mid,end) = partition.partition[block_id as usize];
@@ -47,6 +48,8 @@ fn partref_nlogn_raw(data: Vec<u8>, r: CReader) -> Vec<u32> {
       }
       iters += 1;
   }
+  let cpu: Duration = start_cpu.elapsed();
+  println!("Process CPU time: {}", cpu.as_secs_f32());
   println!("iters: {} ", iters);
   // println!("coalg_input_mb: {}", util::mb(data_size(&coa.data)));
   println!("coalg_refs_mb: {}", util::mb(data_size(&coa) - data_size(&coa.data)));
